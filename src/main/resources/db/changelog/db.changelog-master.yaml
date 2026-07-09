@@ -22,3 +22,6 @@ databaseChangeLog:
 
   - include:
       file: db/changelog/changes/008-add-task-priority.yaml
+
+  - include:
+      file: db/changelog/changes/009-add-revoked-to-refresh-token.yaml

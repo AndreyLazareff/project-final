@@ -2,6 +2,7 @@ package com.lazareff.taskmanager.controller;
 
 import com.lazareff.taskmanager.dto.auth.LoginRequest;
 import com.lazareff.taskmanager.dto.auth.LoginResponse;
+import com.lazareff.taskmanager.dto.auth.RefreshTokenRequest;
 import com.lazareff.taskmanager.dto.auth.RegisterRequest;
 import com.lazareff.taskmanager.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,22 @@ public class AuthController {
     public void register(@RequestBody RegisterRequest request) {
 
         authService.register(request);
+
+    }
+
+    @PostMapping("/logout")
+    public void logout(
+            @RequestBody RefreshTokenRequest request) {
+
+        authService.logout(request.getRefreshToken());
+
+    }
+
+    @PostMapping("/refresh")
+    public LoginResponse refreshToken(
+            @RequestBody RefreshTokenRequest request) {
+
+        return authService.refreshToken(request);
 
     }
 }

@@ -10,6 +10,7 @@ import java.nio.charset.StandardCharsets;
 
 import io.jsonwebtoken.Jwts;
 
+import java.time.Instant;
 import java.util.Date;
 
 @Service
@@ -92,6 +93,12 @@ public class JwtService {
         return Keys.hmacShaKeyFor(
                 secret.getBytes(StandardCharsets.UTF_8)
         );
+
+    }
+
+    public Instant getRefreshTokenExpiryDate() {
+
+        return Instant.now().plusMillis(refreshTokenExpiration);
 
     }
 }
