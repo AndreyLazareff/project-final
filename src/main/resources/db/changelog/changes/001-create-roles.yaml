@@ -26,3 +26,17 @@ databaseChangeLog:
                     nullable: false
                     unique: true
                     uniqueConstraintName: uk_roles_name
+
+        - insert:
+            tableName: roles
+            columns:
+              - column:
+                  name: name
+                  value: USER
+
+        - insert:
+            tableName: roles
+            columns:
+              - column:
+                  name: name
+                  value: ADMIN
