@@ -7,11 +7,15 @@ import com.lazareff.taskmanager.dto.auth.RegisterRequest;
 import com.lazareff.taskmanager.entity.User;
 import com.lazareff.taskmanager.enums.RoleType;
 import com.lazareff.taskmanager.exception.EmailAlreadyExistsException;
+import com.lazareff.taskmanager.exception.UserNotFoundException;
 import com.lazareff.taskmanager.mapper.UserMapper;
 import com.lazareff.taskmanager.repository.UserRepository;
+import com.lazareff.taskmanager.security.jwt.JwtService;
 import com.lazareff.taskmanager.service.AuthService;
 import com.lazareff.taskmanager.service.RoleService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +27,8 @@ public class AuthServiceImpl implements AuthService {
     private final RoleService roleService;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
 
     @Override
     public void register(RegisterRequest request) {
@@ -53,7 +59,29 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public LoginResponse login(LoginRequest request) {
-        return null;
+
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getEmail(),
+                        request.getPassword()
+                )
+        );
+
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new UserNotFoundException(
+                        "User with email " + request.getEmail() + " not found"
+                ));
+
+        String accessToken = jwtService.generateAccessToken(user.getEmail());
+
+        String refreshToken = jwtService.generateRefreshToken(user.getEmail());
+
+        LoginResponse response = new LoginResponse();
+
+        response.setAccessToken(accessToken);
+        response.setRefreshToken(refreshToken);
+
+        return response;
     }
 
     @Override
