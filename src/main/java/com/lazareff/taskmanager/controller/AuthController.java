@@ -5,6 +5,7 @@ import com.lazareff.taskmanager.dto.auth.LoginResponse;
 import com.lazareff.taskmanager.dto.auth.RefreshTokenRequest;
 import com.lazareff.taskmanager.dto.auth.RegisterRequest;
 import com.lazareff.taskmanager.service.AuthService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,13 +20,13 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public LoginResponse login(@RequestBody LoginRequest request) {
+    public LoginResponse login(@Valid @RequestBody LoginRequest request) {
 
         return authService.login(request);
     }
 
     @PostMapping("/register")
-    public void register(@RequestBody RegisterRequest request) {
+    public void register(@Valid @RequestBody RegisterRequest request) {
 
         authService.register(request);
 
@@ -33,7 +34,7 @@ public class AuthController {
 
     @PostMapping("/logout")
     public void logout(
-            @RequestBody RefreshTokenRequest request) {
+            @Valid @RequestBody RefreshTokenRequest request) {
 
         authService.logout(request.getRefreshToken());
 
@@ -41,7 +42,7 @@ public class AuthController {
 
     @PostMapping("/refresh")
     public LoginResponse refreshToken(
-            @RequestBody RefreshTokenRequest request) {
+            @Valid @RequestBody RefreshTokenRequest request) {
 
         return authService.refreshToken(request);
 

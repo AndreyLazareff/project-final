@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
 
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
-        user.setEnabled(request.isEnabled());
+        user.setEnabled(request.getEnabled());
 
         user.setRole(
                 roleService.findByRole(request.getRole())
