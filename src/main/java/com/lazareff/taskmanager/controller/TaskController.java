@@ -1,14 +1,14 @@
 package com.lazareff.taskmanager.controller;
 
+import com.lazareff.taskmanager.dto.task.TaskUpdateRequest;
 import com.lazareff.taskmanager.service.TaskService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.lazareff.taskmanager.dto.task.TaskCreateRequest;
 import com.lazareff.taskmanager.dto.task.TaskResponse;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/tasks")
@@ -22,6 +22,38 @@ public class TaskController {
             @Valid @RequestBody TaskCreateRequest request) {
 
         return taskService.create(request);
+
+    }
+
+    @GetMapping("/{id}")
+    public TaskResponse getById(
+            @PathVariable Long id) {
+
+        return taskService.getById(id);
+
+    }
+
+    @GetMapping
+    public List<TaskResponse> getAll() {
+
+        return taskService.getAll();
+
+    }
+
+    @PutMapping("/{id}")
+    public TaskResponse update(
+            @PathVariable Long id,
+           @Valid @RequestBody TaskUpdateRequest request) {
+
+        return taskService.update(id, request);
+
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(
+            @PathVariable Long id) {
+
+        taskService.delete(id);
 
     }
 

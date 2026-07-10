@@ -6,6 +6,7 @@ import com.lazareff.taskmanager.dto.task.TaskUpdateRequest;
 import com.lazareff.taskmanager.entity.Task;
 import com.lazareff.taskmanager.entity.User;
 import com.lazareff.taskmanager.enums.TaskStatus;
+import com.lazareff.taskmanager.exception.TaskNotFoundException;
 import com.lazareff.taskmanager.mapper.TaskMapper;
 import com.lazareff.taskmanager.repository.TaskRepository;
 import com.lazareff.taskmanager.service.CurrentUserService;
@@ -42,21 +43,65 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public TaskResponse getById(Long id) {
-        return null;
+
+        User currentUser = currentUserService.getCurrentUser();
+
+        Task task = taskRepository
+                .findByIdAndUser(id, currentUser)
+                .orElseThrow(() ->
+                        new TaskNotFoundException(
+                                "Task with id " + id + " not found"
+                        ));
+
+        return taskMapper.toResponse(task);
+
     }
 
     @Override
     public List<TaskResponse> getAll() {
-        return null;
+
+        User currentUser = currentUserService.getCurrentUser();
+
+        return taskRepository.findAllByUser(currentUser)
+                .stream()
+                .map(taskMapper::toResponse)
+                .toList();
+
     }
 
     @Override
     public TaskResponse update(Long id, TaskUpdateRequest request) {
-        return null;
+
+        User currentUser = currentUserService.getCurrentUser();
+
+        Task task = taskRepository
+                .findByIdAndUser(id, currentUser)
+                .orElseThrow(() ->
+                        new TaskNotFoundException(
+                                "Task with id " + id + " not found"
+                        ));
+
+        taskMapper.update(request, task);
+
+        task = taskRepository.save(task);
+
+        return taskMapper.toResponse(task);
+
     }
 
     @Override
     public void delete(Long id) {
+
+        User currentUser = currentUserService.getCurrentUser();
+
+        Task task = taskRepository
+                .findByIdAndUser(id, currentUser)
+                .orElseThrow(() ->
+                        new TaskNotFoundException(
+                                "Task with id " + id + " not found"
+                        ));
+
+        taskRepository.delete(task);
 
     }
 
