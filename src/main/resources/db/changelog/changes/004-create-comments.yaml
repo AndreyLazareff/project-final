@@ -21,7 +21,7 @@ databaseChangeLog:
 
               - column:
                   name: content
-                  type: TEXT
+                  type: VARCHAR(3000)
                   constraints:
                     nullable: false
 

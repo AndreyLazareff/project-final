@@ -12,6 +12,7 @@ import io.jsonwebtoken.Jwts;
 
 import java.time.Instant;
 import java.util.Date;
+import java.util.UUID;
 
 @Service
 public class JwtService {
@@ -28,6 +29,7 @@ public class JwtService {
     public String generateAccessToken(String email) {
 
         return Jwts.builder()
+                .id(UUID.randomUUID().toString())
                 .subject(email)
                 .issuedAt(new Date())
                 .expiration(
@@ -44,6 +46,7 @@ public class JwtService {
     public String generateRefreshToken(String email) {
 
         return Jwts.builder()
+                .id(UUID.randomUUID().toString())
                 .subject(email)
                 .issuedAt(new Date())
                 .expiration(

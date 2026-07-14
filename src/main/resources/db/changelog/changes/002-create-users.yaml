@@ -35,13 +35,13 @@ databaseChangeLog:
 
               - column:
                   name: first_name
-                  type: VARCHAR(100)
+                  type: VARCHAR(255)
                   constraints:
                     nullable: false
 
               - column:
                   name: last_name
-                  type: VARCHAR(100)
+                  type: VARCHAR(255)
                   constraints:
                     nullable: false
 

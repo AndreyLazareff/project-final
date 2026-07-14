@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 public class Comment extends AuditableEntity {
 
-    @Column(name = "content", columnDefinition = "TEXT", nullable = false)
+    @Column(name = "content", nullable = false)
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)

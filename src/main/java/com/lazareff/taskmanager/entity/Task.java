@@ -18,7 +18,7 @@ public class Task extends AuditableEntity {
     @Column(nullable = false)
     private String title;
 
-    @Column(columnDefinition = "TEXT")
+    @Column
     private String description;
 
     @Enumerated(EnumType.STRING)

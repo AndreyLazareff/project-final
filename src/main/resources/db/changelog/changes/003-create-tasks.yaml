@@ -27,7 +27,7 @@ databaseChangeLog:
 
               - column:
                   name: description
-                  type: TEXT
+                  type: VARCHAR(5000)
 
               - column:
                   name: status

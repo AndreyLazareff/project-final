@@ -60,12 +60,25 @@ public class SecurityConfig {
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         );
         http.authorizeHttpRequests(auth -> auth
+
                 .requestMatchers(
                         "/auth/**",
                         "/swagger-ui/**",
                         "/swagger-ui.html",
                         "/v3/api-docs/**"
                 ).permitAll()
+
+                // Только ADMIN
+                .requestMatchers("/users/**")
+                .hasRole("ADMIN")
+
+                // USER и ADMIN
+                .requestMatchers("/tasks/**")
+                .hasAnyRole("USER", "ADMIN")
+
+                .requestMatchers("/comments/**")
+                .hasAnyRole("USER", "ADMIN")
+
                 .anyRequest().authenticated()
         );
         http.authenticationProvider(authenticationProvider());

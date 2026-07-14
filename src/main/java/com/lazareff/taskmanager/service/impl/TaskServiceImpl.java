@@ -58,15 +58,21 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<TaskResponse> getAll() {
+    public List<TaskResponse> getAll(TaskStatus status) {
 
         User currentUser = currentUserService.getCurrentUser();
 
-        return taskRepository.findAllByUser(currentUser)
-                .stream()
+        List<Task> tasks;
+
+        if (status == null) {
+            tasks = taskRepository.findAllByUser(currentUser);
+        } else {
+            tasks = taskRepository.findAllByUserAndStatus(currentUser, status);
+        }
+
+        return tasks.stream()
                 .map(taskMapper::toResponse)
                 .toList();
-
     }
 
     @Override

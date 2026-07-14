@@ -1,6 +1,7 @@
 package com.lazareff.taskmanager.controller;
 
 import com.lazareff.taskmanager.dto.task.TaskUpdateRequest;
+import com.lazareff.taskmanager.enums.TaskStatus;
 import com.lazareff.taskmanager.service.TaskService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,10 +35,10 @@ public class TaskController {
     }
 
     @GetMapping
-    public List<TaskResponse> getAll() {
+    public List<TaskResponse> getAll(
+            @RequestParam(required = false) TaskStatus status) {
 
-        return taskService.getAll();
-
+        return taskService.getAll(status);
     }
 
     @PutMapping("/{id}")
