@@ -266,7 +266,11 @@ class AuthServiceImplTest {
     @Test
     void logout_shouldRevokeToken() {
 
+        User user = new User();
+        user.setId(1L);
+
         RefreshToken token = new RefreshToken();
+        token.setUser(user);
 
         when(refreshTokenRepository.findByToken("token"))
                 .thenReturn(Optional.of(token));
