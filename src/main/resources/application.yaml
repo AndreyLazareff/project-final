@@ -1,0 +1,47 @@
+spring:
+
+  application:
+    name: task-manager
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/task_manager
+    username: postgres
+    password: 89631031226
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+
+    show-sql: false
+
+    properties:
+      hibernate:
+        format_sql: true
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+
+server:
+  port: 8080
+
+jwt:
+  secret: 1234567890123456789012345678901234567890123456789012345678901234
+  access-token-expiration: 900000
+  refresh-token-expiration: 604800000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics
+
+  endpoint:
+    health:
+      show-details: always
+
+info:
+  app:
+    name: Task Manager
+    description: REST API for task management
+    version: 1.0.0

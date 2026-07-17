@@ -13,10 +13,10 @@ import com.lazareff.taskmanager.service.CurrentUserService;
 import com.lazareff.taskmanager.service.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
+import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TaskServiceImpl implements TaskService {
@@ -30,12 +30,20 @@ public class TaskServiceImpl implements TaskService {
 
         User currentUser = currentUserService.getCurrentUser();
 
+        log.info("Creating new task for user: {}",
+                currentUser.getEmail());
+
         Task task = taskMapper.toEntity(request);
 
         task.setUser(currentUser);
         task.setStatus(TaskStatus.TODO);
 
         task = taskRepository.save(task);
+
+        log.info("Task created successfully. Id: {}, Title: {}, User: {}",
+                task.getId(),
+                task.getTitle(),
+                currentUser.getEmail());
 
         return taskMapper.toResponse(task);
 
@@ -48,10 +56,15 @@ public class TaskServiceImpl implements TaskService {
 
         Task task = taskRepository
                 .findByIdAndUser(id, currentUser)
-                .orElseThrow(() ->
-                        new TaskNotFoundException(
-                                "Task with id " + id + " not found"
-                        ));
+                .orElseThrow(() -> {
+                    log.warn("Task not found. Id: {}, User: {}",
+                            id,
+                            currentUser.getEmail());
+
+                    return new TaskNotFoundException(
+                            "Task with id " + id + " not found"
+                    );
+                });
 
         return taskMapper.toResponse(task);
 
@@ -82,14 +95,24 @@ public class TaskServiceImpl implements TaskService {
 
         Task task = taskRepository
                 .findByIdAndUser(id, currentUser)
-                .orElseThrow(() ->
-                        new TaskNotFoundException(
-                                "Task with id " + id + " not found"
-                        ));
+                .orElseThrow(() -> {
+                    log.warn("Task not found. Id: {}, User: {}",
+                            id,
+                            currentUser.getEmail());
+
+                    return new TaskNotFoundException(
+                            "Task with id " + id + " not found"
+                    );
+                });
 
         taskMapper.update(request, task);
 
         task = taskRepository.save(task);
+
+        log.info("Task updated successfully. Id: {}, Title: {}, User: {}",
+                task.getId(),
+                task.getTitle(),
+                currentUser.getEmail());
 
         return taskMapper.toResponse(task);
 
@@ -102,12 +125,21 @@ public class TaskServiceImpl implements TaskService {
 
         Task task = taskRepository
                 .findByIdAndUser(id, currentUser)
-                .orElseThrow(() ->
-                        new TaskNotFoundException(
-                                "Task with id " + id + " not found"
-                        ));
+                .orElseThrow(() -> {
+                    log.warn("Task deletion failed. Task not found. Id: {}, User: {}",
+                            id,
+                            currentUser.getEmail());
+
+                    return new TaskNotFoundException(
+                            "Task with id " + id + " not found"
+                    );
+                });
 
         taskRepository.delete(task);
+
+        log.info("Task deleted successfully. Id: {}, User: {}",
+                id,
+                currentUser.getEmail());
 
     }
 

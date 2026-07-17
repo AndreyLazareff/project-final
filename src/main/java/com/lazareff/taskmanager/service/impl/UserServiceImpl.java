@@ -10,9 +10,10 @@ import com.lazareff.taskmanager.service.RoleService;
 import com.lazareff.taskmanager.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -24,9 +25,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse getById(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(
-                        "User with id " + id + " not found"
-                ));
+                .orElseThrow(() -> {
+                    log.warn("User not found. Id: {}", id);
+
+                    return new UserNotFoundException(
+                            "User with id " + id + " not found"
+                    );
+                });
 
         return userMapper.toResponse(user);
     }
@@ -45,9 +50,13 @@ public class UserServiceImpl implements UserService {
     public UserResponse update(Long id, UserUpdateRequest request) {
 
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(
-                        "User with id " + id + " not found"
-                ));
+                .orElseThrow(() -> {
+                    log.warn("User update failed. User not found. Id: {}", id);
+
+                    return new UserNotFoundException(
+                            "User with id " + id + " not found"
+                    );
+                });
 
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
@@ -59,6 +68,10 @@ public class UserServiceImpl implements UserService {
 
         userRepository.save(user);
 
+        log.info("User updated successfully. Id: {}, Email: {}",
+                user.getId(),
+                user.getEmail());
+
         return userMapper.toResponse(user);
 
     }
@@ -67,11 +80,19 @@ public class UserServiceImpl implements UserService {
     public void delete(Long id) {
 
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(
-                        "User with id " + id + " not found"
-                ));
+                .orElseThrow(() -> {
+                    log.warn("User deletion failed. User not found. Id: {}", id);
+
+                    return new UserNotFoundException(
+                            "User with id " + id + " not found"
+                    );
+                });
 
         userRepository.delete(user);
+
+        log.info("User deleted successfully. Id: {}, Email: {}",
+                user.getId(),
+                user.getEmail());
 
     }
 

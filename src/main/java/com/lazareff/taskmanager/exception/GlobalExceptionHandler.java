@@ -2,14 +2,15 @@ package com.lazareff.taskmanager.exception;
 
 import com.lazareff.taskmanager.dto.error.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-
 import java.time.LocalDateTime;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -134,9 +135,13 @@ public class GlobalExceptionHandler {
             Exception ex,
             HttpServletRequest request) {
 
+        log.error("Unhandled exception. URI: {}",
+                request.getRequestURI(),
+                ex);
+
         return buildErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                ex.getMessage(),
+                "Internal server error",
                 request
         );
     }

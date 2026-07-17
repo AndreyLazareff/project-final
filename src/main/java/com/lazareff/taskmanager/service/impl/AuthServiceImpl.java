@@ -7,7 +7,6 @@ import com.lazareff.taskmanager.dto.auth.RegisterRequest;
 import com.lazareff.taskmanager.entity.User;
 import com.lazareff.taskmanager.enums.RoleType;
 import com.lazareff.taskmanager.exception.*;
-import com.lazareff.taskmanager.mapper.UserMapper;
 import com.lazareff.taskmanager.repository.UserRepository;
 import com.lazareff.taskmanager.security.jwt.JwtService;
 import com.lazareff.taskmanager.service.AuthService;
@@ -20,16 +19,17 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.lazareff.taskmanager.entity.RefreshToken;
 import com.lazareff.taskmanager.repository.RefreshTokenRepository;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.Instant;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
     private final RoleService roleService;
-    private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
@@ -38,7 +38,12 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void register(RegisterRequest request) {
 
+        log.info("Registration attempt for email: {}", request.getEmail());
+
         if (userRepository.existsByEmail(request.getEmail())) {
+
+            log.warn("Registration failed. Email already exists: {}", request.getEmail());
+
             throw new EmailAlreadyExistsException(
                     "Email " + request.getEmail() + " already exists"
             );
@@ -60,10 +65,16 @@ public class AuthServiceImpl implements AuthService {
 
         userRepository.save(user);
 
+        log.info("User registered successfully. Id: {}, Email: {}",
+                user.getId(),
+                user.getEmail());
+
     }
 
     @Override
     public LoginResponse login(LoginRequest request) {
+
+        log.info("Login attempt for email: {}", request.getEmail());
 
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -92,6 +103,10 @@ public class AuthServiceImpl implements AuthService {
 
         refreshTokenRepository.save(refreshTokenEntity);
 
+        log.info("User logged in successfully. Id: {}, Email: {}",
+                user.getId(),
+                user.getEmail());
+
         LoginResponse response = new LoginResponse();
 
         response.setAccessToken(accessToken);
@@ -104,7 +119,12 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public LoginResponse refreshToken(RefreshTokenRequest request) {
 
+        log.info("Refresh token request received.");
+
         if (!jwtService.isTokenValid(request.getRefreshToken())) {
+
+            log.warn("Refresh token validation failed.");
+
             throw new RefreshTokenExpiredException(
                     "Refresh token is invalid"
             );
@@ -118,12 +138,18 @@ public class AuthServiceImpl implements AuthService {
                         ));
 
         if (refreshToken.isRevoked()) {
+
+            log.warn("Attempt to use revoked refresh token.");
+
             throw new RefreshTokenRevokedException(
                     "Refresh token revoked"
             );
         }
 
         if (refreshToken.getExpiryDate().isBefore(Instant.now())) {
+
+            log.warn("Attempt to use expired refresh token.");
+
             throw new RefreshTokenExpiredException(
                     "Refresh token expired"
             );
@@ -148,6 +174,9 @@ public class AuthServiceImpl implements AuthService {
 
         refreshTokenRepository.save(newToken);
 
+        log.info("Refresh token successfully renewed for user: {}",
+                email);
+
         String accessToken =
                 jwtService.generateAccessToken(email);
 
@@ -163,6 +192,8 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public void logout(String refreshToken) {
 
+        log.info("Logout request received.");
+
         RefreshToken token = refreshTokenRepository
                 .findByToken(refreshToken)
                 .orElseThrow(() ->
@@ -173,6 +204,9 @@ public class AuthServiceImpl implements AuthService {
         token.setRevoked(true);
 
         refreshTokenRepository.save(token);
+
+        log.info("User logged out successfully. User id: {}",
+                token.getUser().getId());
     }
 
 }
