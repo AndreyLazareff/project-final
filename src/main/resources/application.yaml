@@ -4,12 +4,13 @@ spring:
     name: task-manager
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/task_manager
-    username: postgres
-    password: 89631031226
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/task_manager}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:89631031226}
 
   jpa:
     open-in-view: false
+
     hibernate:
       ddl-auto: validate
 
